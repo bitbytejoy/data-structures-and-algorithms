@@ -11,6 +11,29 @@ class InfixExpression:
         self.tokens = self.__parse_tokens(expression)
         self.__validate_operators(self.tokens)
     def to_postfix(self):
+        return " ".join(self.__to_postfix_tokens())
+    def evaluate(self):
+        for character in self.expression:
+            if character not in "+-*/() 0123456789":
+                raise EvaluationCharactersError()
+        tokens = self.__to_postfix_tokens()
+        operands = Stack()
+        for token in tokens:
+            if token not in "+-*/":
+                operands.push(float(token))
+                continue
+            operand2 = operands.pop()
+            operand1 = operands.pop()
+            if token == "+":
+                operands.push(operand1 + operand2)
+            elif token == "-":
+                operands.push(operand1 - operand2)
+            elif token == "*":
+                operands.push(operand1 * operand2)
+            elif token == "/":
+                operands.push(operand1 / operand2)
+        return operands.pop()
+    def __to_postfix_tokens(self):
         postfix_expression = []
         operators = Stack()
         for token in self.tokens:
@@ -34,7 +57,7 @@ class InfixExpression:
                 operators.push(token)
         while not operators.is_empty():
             postfix_expression.append(operators.pop())
-        return " ".join(postfix_expression)
+        return postfix_expression
     def __is_acceptable(self, character):
         asciii = ord(character)
         is_lower_case = asciii >= ord('a') and asciii <= ord('z')
@@ -97,9 +120,12 @@ class InfixExpression:
 class InvalidInfixExpressionError(Exception):
     pass
 
+class EvaluationCharactersError(Exception):
+    pass
+
 import unittest
 class InfixExpressionTest(unittest.TestCase):
-    def test_invalid_expression(self):
+    def test_to_postfix_invalid_expressions(self):
         # Invalid length
         with self.assertRaises(InvalidInfixExpressionError):
             InfixExpression("")
@@ -112,7 +138,7 @@ class InfixExpressionTest(unittest.TestCase):
         # Invalid operators
         with self.assertRaises(InvalidInfixExpressionError):
             InfixExpression("+ 23 - 19 * ()")
-    def test_valid_expression(self):
+    def test_to_postfix_valid_expressions(self):
         # Test 1
         infix_expression = InfixExpression("x * y / (5 * z) + 10")
         expected = "x y * 5 z * / 10 +"
@@ -127,6 +153,15 @@ class InfixExpressionTest(unittest.TestCase):
         infix_expression = InfixExpression("4+8/7*8")
         expected = "4 8 7 / 8 * +"
         actual = infix_expression.to_postfix()
+        self.assertEqual(expected, actual)
+    def test_evaluate_invalid_expressions(self):
+        infix_expression = InfixExpression("x * y / (5 * z) + 10")
+        with self.assertRaises(EvaluationCharactersError):
+            infix_expression.evaluate()
+    def test_evaluate_valid_expressions(self):
+        infix_expression = InfixExpression("(4+8)*(6-5)/((3-2)*(2+2)) ")
+        expected = 3
+        actual = infix_expression.evaluate()
         self.assertEqual(expected, actual)
 
 if __name__ == "__main__":
