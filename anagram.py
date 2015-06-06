@@ -1,4 +1,6 @@
 def is_anagram(word_1, word_2):
+    if len(word_1) != len(word_2):
+        return False
     letters_1 = {}
     letters_2 = {}
     for letter in word_1:
