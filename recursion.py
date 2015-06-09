@@ -88,5 +88,31 @@ class ReverseStringTest(unittest.TestCase):
         self.assertEqual("ba", reverse_string("ab"))
         self.assertEqual("cba", reverse_string("abc"))
 
+def is_palindrome(string):
+    if len(string) <= 1:
+        return True
+    last_letter_ascii = ord(string[len(string) - 1].upper())
+    if last_letter_ascii < ord('A') or last_letter_ascii > ord('Z'):
+        return is_palindrome(string[0:len(string) - 1])
+    first_letter_ascii = ord(string[0].upper())
+    if first_letter_ascii < ord('A') or first_letter_ascii > ord('Z'):
+        return is_palindrome(string[1:])
+    if first_letter_ascii == last_letter_ascii:
+        return is_palindrome(string[1:len(string) - 1])
+    return False
+
+class IsPalindromeTest(unittest.TestCase):
+    def test_blank_string(self):
+        self.assertTrue(is_palindrome(""))
+    def test_one_letter_string(self):
+        self.assertTrue(is_palindrome("a"))
+    def test_non_palindrome(self):
+        self.assertFalse(is_palindrome("abcd"))
+    def test_palindrome(self):
+        very_long_palindrome = ("Are we not pure? \"No sir!\" Panama's moody "
+                                "Noriega brags. \"It is garbage!\" Irony dooms "
+                                "a man; a prisoner up to new era.")
+        self.assertTrue(is_palindrome(very_long_palindrome))
+
 if __name__ == "__main__":
     unittest.main()
