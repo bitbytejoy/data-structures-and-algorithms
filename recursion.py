@@ -74,5 +74,19 @@ class IntToBaseTest(unittest.TestCase):
         self.assertEqual("24", int_to_base(20, 8))
         self.assertEqual("14", int_to_base(20, 16))
 
+def reverse_string(string):
+    if len(string) == 0:
+        return ""
+    return reverse_string(string[1:]) + string[0]
+
+class ReverseStringTest(unittest.TestCase):
+    def test_empty_string(self):
+        self.assertEqual("", reverse_string(""))
+    def test_one_character_string(self):
+        self.assertEqual("a", reverse_string("a"))
+    def test_multiple_characters_string(self):
+        self.assertEqual("ba", reverse_string("ab"))
+        self.assertEqual("cba", reverse_string("abc"))
+
 if __name__ == "__main__":
     unittest.main()
