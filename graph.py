@@ -1,6 +1,9 @@
 class Vertex:
 	def __init__(self, key):
 		self.key = key
+		self.distance = 0
+		self.predecessor = None
+		self.color = "white"
 		self.neighbours = {}
 	def get_key(self):
 		return self.key
