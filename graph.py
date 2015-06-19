@@ -30,16 +30,15 @@ class Graph:
 	def add_edge(self, from_key, to_key, weight = 0):
 		from_vertex = self.vertices.get(from_key)
 		to_vertex = self.vertices.get(to_key)
-		if from_vertex is None or to_vertex is None:
-			raise VertexNotFoundError()
+		if from_vertex is None:
+			from_vertex = self.add_vertex(from_key)
+		if to_vertex is None:
+			to_vertex = self.add_vertex(to_key)
 		from_vertex.add_neighbour(to_key, weight)
 	def __contains__(self, key):
 		return key in self.vertices
 	def __iter__(self):
 		return iter(self.vertices.values())
-
-class VertexNotFoundError(Exception):
-	pass
 
 import unittest
 
@@ -108,6 +107,45 @@ class GraphTest(unittest.TestCase):
 		self.assertEqual(2, g.get_vertex(2).get_weight(3))
 		self.assertEqual(3, g.get_vertex(3).get_weight(1))
 		self.assertEqual(4, g.get_vertex(3).get_weight(2))
+		'''
+		  1 2 3 4 5
+		1   1
+		2     2
+		3 3 4
+		4     5
+		5   6
+		'''
+		g.add_vertex(1)
+		g.add_vertex(2)
+		g.add_vertex(3)
+		g.add_edge(1, 2, 1)
+		g.add_edge(2, 3, 2)
+		g.add_edge(3, 1, 3)
+		g.add_edge(3, 2, 4)
+		g.add_edge(4, 3, 5)
+		g.add_edge(5, 2, 6)
+		self.assertTrue(1 in g)
+		self.assertTrue(2 in g)
+		self.assertTrue(3 in g)
+		self.assertTrue(4 in g)
+		self.assertTrue(5 in g)
+		self.assertFalse(6 in g)
+		vertices = g.get_vertices()
+		for vertex in vertices:
+			self.assertTrue(vertex in [1, 2, 3, 4, 5])
+		self.assertEqual([2], g.get_vertex(1).get_neighbours())
+		self.assertEqual([3], g.get_vertex(2).get_neighbours())
+		self.assertEqual([3], g.get_vertex(4).get_neighbours())
+		self.assertEqual([2], g.get_vertex(5).get_neighbours())
+		connections = g.get_vertex(3).get_neighbours()
+		for connection in connections:
+			self.assertTrue(connection in [1, 2])
+		self.assertEqual(1, g.get_vertex(1).get_weight(2))
+		self.assertEqual(2, g.get_vertex(2).get_weight(3))
+		self.assertEqual(3, g.get_vertex(3).get_weight(1))
+		self.assertEqual(4, g.get_vertex(3).get_weight(2))
+		self.assertEqual(5, g.get_vertex(4).get_weight(3))
+		self.assertEqual(6, g.get_vertex(5).get_weight(2))
 
 if __name__ == "__main__":
 	unittest.main()
