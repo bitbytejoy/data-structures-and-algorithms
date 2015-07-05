@@ -5,6 +5,8 @@ class Vertex:
 		self.predecessor = None
 		self.color = "white"
 		self.neighbours = {}
+		self.discovery_time = 0
+		self.finish_time = 0
 	def get_key(self):
 		return self.key
 	def add_neighbour(self, neighbour_key, weight = 0):
@@ -17,7 +19,7 @@ class Vertex:
 		neighbours = str(self.neighbours.keys())
 		return "{} connected to {}".format(self.key, neighbours)
 
-class Graph:
+class Graph(object):
 	def __init__(self):
 		self.vertices = {}
 		self.vertices_count = 0
